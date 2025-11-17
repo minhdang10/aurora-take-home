@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Data QA System - Test Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .answer {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        .answer h3 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+        .examples {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+        .examples h3 {
+            margin-top: 0;
+        }
+        .example-question {
+            cursor: pointer;
+            padding: 8px;
+            margin: 5px 0;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .example-question:hover {
+            background-color: #e8f5e9;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Member Data QA System</h1>
+        
+        <div class="form-group">
+            <label for="question">Ask a question:</label>
+            <input type="text" id="question" placeholder="e.g., When is Layla planning her trip to London?" />
+        </div>
+        
+        <button onclick="askQuestion()">Ask Question</button>
+        
+        <div id="answer" style="display: none;" class="answer">
+            <h3>Answer:</h3>
+            <p id="answerText"></p>
+        </div>
+        
+        <div class="examples">
+            <h3>Example Questions:</h3>
+            <div class="example-question" onclick="setQuestion('When is Layla planning her trip to London?')">
+                When is Layla planning her trip to London?
+            </div>
+            <div class="example-question" onclick="setQuestion('How many cars does Vikram Desai have?')">
+                How many cars does Vikram Desai have?
+            </div>
+            <div class="example-question" onclick="setQuestion('What are Amira\'s favorite restaurants?')">
+                What are Amira's favorite restaurants?
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/ask';
+        
+        function setQuestion(question) {
+            document.getElementById('question').value = question;
+        }
+        
+        async function askQuestion() {
+            const question = document.getElementById('question').value.trim();
+            
+            if (!question) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            const answerDiv = document.getElementById('answer');
+            const answerText = document.getElementById('answerText');
+            
+            answerDiv.style.display = 'block';
+            answerText.innerHTML = '<span class="loading">Loading...</span>';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                answerText.innerHTML = data.answer || 'No answer received';
+            } catch (error) {
+                answerText.innerHTML = `<span style="color: red;">Error: ${error.message}</span><br>Make sure the server is running on ${API_URL}`;
+            }
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
+
