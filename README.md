@@ -195,10 +195,9 @@ fly secrets set OPENAI_API_KEY=your_key_here
 
 ### Architecture Decisions
 
-1. **FastAPI**: Chosen for async support, automatic OpenAPI docs, and modern Python features
-2. **Caching**: Messages are cached to reduce API calls and improve response time
-3. **Error Handling**: Graceful fallbacks ensure the system works even if external services fail
-4. **Context Window Management**: Limits context size to stay within token limits
+1. **Caching**: Messages are cached to reduce API calls and improve response time
+2. **Error Handling**: Graceful fallbacks ensure the system works even if external services fail
+3. **Context Window Management**: Limits context size to stay within token limits
 
 ## Data Insights
 
